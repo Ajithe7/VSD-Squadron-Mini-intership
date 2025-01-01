@@ -1,13 +1,22 @@
+Your updated GitHub README documentation looks well-structured and clear for rendering on GitHub. However, I'll suggest some refinements for further clarity and polish:
 
+### Suggestions for Improvement:
+1. **Title and Purpose**: Expand the title slightly to make the purpose of the repository clear for users skimming GitHub listings.
+2. **Section Highlights**: Use bold or italic styles for important terms, such as file names or tools like Spike, to draw attention.
+3. **Additional Clarity for Beginners**: Briefly explain the context of RISC-V for users who may not be familiar with it.
+4. **Formatting Consistency**: Ensure alignment and proper spacing for bullet points and lists for consistent rendering.
 
-## TASK -2
-
- # Odd or Even Program with RISC-V Verification
-
-This repository contains a simple C program to determine whether a number is odd or even. It also provides instructions to compile and verify the program for both the host system and the RISC-V architecture using Spike.
+Here’s the refined version:
 
 ---
 
+# Odd or Even Program: Host and RISC-V Verification
+
+This repository contains a simple C program to determine whether a number is odd or even. It also provides detailed instructions to compile and verify the program for both a **host system** and the **RISC-V architecture** using the Spike simulator.
+
+---
+
+## File: `oddoreven.c`
 
 ```c
 #include <stdio.h>
@@ -31,23 +40,25 @@ int main() {
 
 ## Instructions
 
-### Step 1: Compile Using GCC
+### Step 1: Compile Using GCC (Host System)
 
-Use GCC to compile the program `oddoreven.c` for the host system:
+Compile the program `oddoreven.c` for your local system using GCC:
 
 ```bash
 gcc oddoreven.c -o oddoreven
 ```
 
-Run the compiled program to verify its functionality:
+Run the compiled program:
 
 ```bash
 ./oddoreven
 ```
 
+---
+
 ### Step 2: Compile Using RISC-V GCC
 
-To compile the program for the RISC-V architecture, use the following command:
+To compile the program for the **RISC-V architecture**, use the following command:
 
 ```bash
 riscv64-unknown-elf-gcc -O2 -mabi=lp64 -march=rv64i -o oddoreven.o oddoreven.c
@@ -55,19 +66,48 @@ riscv64-unknown-elf-gcc -O2 -mabi=lp64 -march=rv64i -o oddoreven.o oddoreven.c
 
 #### Explanation of Flags:
 - `-O2`: Optimizes the code for better performance.
-- `-mabi=lp64`: Specifies the RISC-V 64-bit LP64 ABI (64-bit pointers and integers).
-- `-march=rv64i`: Targets the RISC-V 64-bit integer base architecture.
+- `-mabi=lp64`: Specifies the **RISC-V 64-bit LP64 ABI** (64-bit pointers and integers).
+- `-march=rv64i`: Targets the **RISC-V 64-bit integer base architecture**.
 - `-o oddoreven.o`: Defines the output file name.
 
-### Step 3: Run with Spike
+---
 
-Run the compiled RISC-V binary using the Spike simulator:
+### Step 3: Run the Program with Spike Simulator
+
+Run the compiled RISC-V binary using **Spike**, the RISC-V simulator:
 
 ```bash
 spike pk oddoreven.o
 ```
 
-#### Components Explanation:
-- `spike`: The RISC-V simulator.
-- `pk`: The proxy kernel for loading and executing the program.
+#### Explanation of Components:
+- `spike`: The **RISC-V ISA Simulator**.
+- `pk`: The **Proxy Kernel** for loading and executing the program.
 - `oddoreven.o`: The compiled RISC-V executable file.
+
+---
+
+## Example Outputs
+
+### Input: `4`
+```bash
+Enter a number: 4
+The number 4 is even.
+```
+
+### Input: `5`
+```bash
+Enter a number: 5
+The number 5 is odd.
+```
+
+---
+
+### Key Features in This Guide
+- **Clear Compilation Steps**: Covers host and RISC-V setups.
+- **Simulator Instructions**: Spike simulation steps are explained for beginners.
+- **Detailed Flag Explanations**: Compilation flags are described for better understanding.
+
+---
+
+Let me know if you'd like further refinements or any additional details to include!
