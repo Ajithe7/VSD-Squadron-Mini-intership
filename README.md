@@ -287,6 +287,260 @@ spike pk oddoreven.o
 - `spike` → The RISC-V simulator.  
 - `pk` → The proxy kernel for loading and executing the program.  
 - `oddoreven.o` → The compiled RISC-V executable file.  
-```
+
+# Task 3  
+
+## RISC-V ISA Set  
+
+RISC-V instructions are divided into several types based on the format of their encoding. The main instruction types are:  
+
+---
+
+### 1. R-Type (Register-type)  
+
+These instructions involve registers and typically use three registers. They are used for arithmetic operations, logic operations, and some others. The entire 32-bit instruction is divided into six fields.  
+
+![Screenshot from 2025-02-15 13-12-30](https://github.com/user-attachments/assets/eb8e6005-572c-4879-b293-67a49c31010a)
+
+
+- **[31:25] funct7** → Specifies additional control signals for the operation, often used to differentiate between instructions in combination with funct3.  
+- **[24:20] rs2** → Source register 2 (second operand for the operation).  
+- **[19:15] rs1** → Source register 1 (first operand for the operation).  
+- **[14:12] funct3** → Specifies the operation to perform (e.g., add, subtract) in combination with opcode and funct7.  
+- **[11:7] rd** → Destination register (where the result of the operation is stored).  
+- **[6:0] opcode** → Specifies the instruction type (e.g., R-Type, I-Type).  
+
+**Example Instructions:** `ADD, SUB, AND, OR, XOR`  
+
+---
+
+### 2. I-Type (Immediate-type)  
+
+These instructions involve an immediate value (constant) and a source register used for arithmetic, logic, and memory operations.  
+![Screenshot from 2025-02-15 13-15-09](https://github.com/user-attachments/assets/0eaa3039-a58c-4cc6-b6ef-4725dc19de6d)
+
+
+
+ 
+
+- **[31:20] imm[11:0]** → Immediate value (constant) used as an operand in the instruction.  
+- **[19:15] rs1** → Source register 1 (first operand).  
+- **[14:12] funct3** → Specifies the operation in combination with the opcode.  
+- **[11:7] rd** → Destination register (where the result is stored).  
+- **[6:0] opcode** → Specifies the instruction type.  
+
+**Example Instructions:** `ADDI, ANDI, LUI, JALR`  
+
+---
+
+### 3. S-Type (Store-type)  
+
+These instructions are used for store operations that store data into memory from a register.  
+![Screenshot from 2025-02-15 13-15-32](https://github.com/user-attachments/assets/343141bf-f650-4ade-8c2d-7ed9ca618afe)
+
+
+
+- **[31:25] imm[11:5]** → Upper 7 bits of the immediate value.  
+- **[24:20] rs2** → Source register 2 (data to store in memory).  
+- **[19:15] rs1** → Base register for the memory address calculation.  
+- **[14:12] funct3** → Specifies the operation (e.g., store byte or word).  
+- **[11:7] imm[4:0]** → Lower 5 bits of the immediate value.  
+- **[6:0] opcode** → Specifies the instruction type.  
+
+**Example Instructions:** `SW, SH, SB`  
+
+---
+
+### 4. B-Type (Branch-type)  
+
+These are branch operations used for conditional branching.  
+
+![Screenshot from 2025-02-15 13-15-55](https://github.com/user-attachments/assets/f6187cc8-a97c-42e3-bfa7-e39d89b9c0ea)
+
+
+- **[31] imm[12]** → Most significant bit of the immediate value.  
+- **[30:25] imm[10:5]** → Bits 10 to 5 of the immediate value.  
+- **[24:20] rs2** → Second source register (used for comparison).  
+- **[19:15] rs1** → First source register (used for comparison).  
+- **[14:12] funct3** → Specifies the branch condition (e.g., equal, not equal).  
+- **[11:8] imm[4:1]** → Bits 4 to 1 of the immediate value.  
+- **[7] imm[11]** → Bit 11 of the immediate value.  
+- **[6:0] opcode** → Specifies the instruction type.  
+
+**Example Instructions:** `BEQ, BNE, BLT, BGE`  
+
+---
+
+### 5. U-Type (Upper immediate-type)  
+
+These instructions involve loading large immediate values into registers, typically used for the upper 20 bits of addresses.  
+
+![Screenshot from 2025-02-15 13-16-16](https://github.com/user-attachments/assets/e46d947e-4814-4d15-b7b8-ae1f2d2789ff)
+
+
+- **[31:12] imm[31:12]** → Immediate value (20 most significant bits) loaded into the upper bits of a register.  
+- **[11:7] rd** → Destination register.  
+- **[6:0] opcode** → Specifies the instruction type.  
+
+**Example Instructions:** `LUI, AUIPC`  
+
+---
+
+### 6. J-Type (Jump-type)  
+
+These instructions are used for unconditional jumps (typically for function calls and returns).  
+
+![Screenshot from 2025-02-15 13-16-36](https://github.com/user-attachments/assets/0da49330-a9a0-487b-a055-94ecf397c190)
+
+
+- **[31] imm[20]** → Most significant bit of the immediate value.  
+- **[30:21] imm[10:1]** → Bits 10 to 1 of the immediate value.  
+- **[20] imm[11]** → Bit 11 of the immediate value.  
+- **[19:12] imm[19:12]** → Bits 19 to 12 of the immediate value.  
+- **[11:7] rd** → Destination register (stores the return address after the jump).  
+- **[6:0] opcode** → Specifies the instruction type.  
+
+**Example Instructions:** `JAL, JALR`  
+
+# **RISC-V Instruction Analysis**
+
+This document provides a detailed breakdown of 15 unique RISC-V instructions extracted from `riscv-objdump` of `Factorial.o`. Each instruction is analyzed based on its type, encoding format, bit representation, and hexadecimal representation.
+
+---
+
+## **1. `lui a0, 0x2b`**
+- **Instruction Type**: LUI (Load Upper Immediate)
+- **Format**: `imm[31:12] | rd | opcode`
+- **Breakdown**:
+  - `imm[31:12] = 0x2b` (0000000000101011)
+  - `rd = a0 (01010)`
+  - `opcode = 0110111`
+- **32-bit encoding**: `0000000000101011_01010_0110111`
+- **Hexadecimal**: `0x0002B537`
+
+---
+
+## **2. `addi sp, sp, -48`**
+- **Instruction Type**: I-Type (Immediate Arithmetic)
+- **Format**: `imm[11:0] | rs1 | func3 | rd | opcode`
+- **Breakdown**:
+  - `imm[11:0] = -48` (`1111111111011000` in two's complement)
+  - `rs1 = sp (00010)`
+  - `rd = sp (00010)`
+  - `func3 = 000`
+  - `opcode = 0010011`
+- **32-bit encoding**: `111111011000_00010_000_00010_0010011`
+- **Hexadecimal**: `0xFD010113`
+
+---
+
+## **3. `sd ra, 40(sp)`**
+- **Instruction Type**: S-Type (Store)
+- **Format**: `imm[11:5] | rs2 | rs1 | func3 | imm[4:0] | opcode`
+- **Breakdown**:
+  - `imm[11:5] = 0000000`
+  - `rs2 = ra (00001)`
+  - `rs1 = sp (00010)`
+  - `func3 = 011`
+  - `imm[4:0] = 01000`
+  - `opcode = 0100011`
+- **32-bit encoding**: `0000000_00001_00010_011_01000_0100011`
+- **Hexadecimal**: `0x02113423`
+
+---
+
+## **4. `jal ra, 104d8`**
+- **Instruction Type**: J-Type (Jump)
+- **Format**: `imm[20] | imm[10:1] | imm[11] | imm[19:12] | rd | opcode`
+- **Breakdown**:
+  - `imm[20] = 0`
+  - `imm[10:1] = 1000001000`
+  - `imm[11] = 0`
+  - `imm[19:12] = 00000000`
+  - `rd = ra (00001)`
+  - `opcode = 1101111`
+- **32-bit encoding**: `0_1000001000_0_00000000_00001_1101111`
+- **Hexadecimal**: `0x410000ef`
+
+---
+
+## **5. `lw s1, 12(sp)`**
+- **Instruction Type**: I-Type (Load)
+- **Format**: `imm[11:0] | rs1 | func3 | rd | opcode`
+- **Breakdown**:
+  - `imm[11:0] = 000000001100`
+  - `rs1 = sp (00010)`
+  - `rd = s1 (10001)`
+  - `func3 = 010`
+  - `opcode = 0000011`
+- **32-bit encoding**: `000000001100_00010_010_01001_0000011`
+- **Hexadecimal**: `0x00c12483`
+
+---
+
+## **6. `mv a5, s1`**
+- **Instruction Type**: R-Type (Register Operation)
+- **Format**: `funct7 | rs2 | rs1 | funct3 | rd | opcode`
+- **Breakdown**:
+  - `rs2 = zero (00000)`
+  - `rs1 = s1 (10001)`
+  - `rd = a5 (01111)`
+  - `func3 = 000`
+  - `funct7 = 0000000`
+  - `opcode = 0010011`
+- **Equivalent to**: `addi a5, s1, 0`
+- **32-bit encoding**: `0000000_00000_01001_000_01111_0010011`
+- **Hexadecimal**: `0x00048793`
+
+---
+
+## **7. `li a1, 1`**
+- **Instruction Type**: I-Type (Immediate Load)
+- **Format**: `imm[11:0] | rs1 | func3 | rd | opcode`
+- **Breakdown**:
+  - `imm[11:0] = 1 (000000000001)`
+  - `rs1 = zero (00000)`
+  - `rd = a1 (01101)`
+  - `func3 = 000`
+  - `opcode = 0010011`
+- **32-bit encoding**: `000000000001_00000_000_01011_0010011`
+- **Hexadecimal**: `0x00100593`
+
+
+# TASK 4 - **Functional Simulation of RISC-V Core Using Verilog**  
+
+### Open GTKWave for Functional Simulation  
+
+Follow the steps below to clone the repository, simulate the RISC-V core, and open GTKWave for waveform analysis:  
+
+1. **Clone the GitHub Repository:**  
+   ```bash  
+   git clone https://github.com/vinayrayapati/rv32i.git 
+   ```  
+
+2. **Navigate to the Project Directory:**  
+   ```bash  
+   cd rv32i  
+   ```  
+
+3. **Compile the Verilog Files:**  
+   ```bash  
+   iverilog -o iiitb_rv32i iiitb_rv32i.v iiitb_rv32i_tb.v  
+   ```  
+
+4. **Run the Simulation:**  
+   ```bash  
+   ./iiitb_rv32i  
+
+### Visualizing the Waveform in GTKWave  
+
+Once the simulation generates the `.vcd` (Value Change Dump) file, follow these steps to visualize the waveform in GTKWave:  
+
+1. **Run GTKWave with the Generated .vcd File:**  
+   ```bash  
+   gtkwave iiitb_rv321.vcd  
+   ```  
+
+
 
 
