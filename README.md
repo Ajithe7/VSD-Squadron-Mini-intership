@@ -215,8 +215,78 @@ git push origin main
 ## Conclusion
 
 This guide ensures you can compile and test a basic C program for both native and RISC-V environments. The steps demonstrate the integration of the RISC-V toolchain and Spike simulator to verify program functionality.
+
+# TASK 2
+## Odd or Even Program with RISC-V Verification
+
+
+
+
+
+## C Program  
+
+```c
+#include <stdio.h>
+
+int main() {
+    int num;
+    printf("Enter a number: ");
+    scanf("%d", &num);
+
+    if (num % 2 == 0) {
+        printf("The number %d is even.\n", num);
+    } else {
+        printf("The number %d is odd.\n", num);
+    }
+
+    return 0;
+}
 ```
 
 ---
 
-This formatting is GitHub-compatible, with proper syntax highlighting for both code files and Markdown content. Let me know if you need further adjustments!
+## Instructions  
+
+### Step 1: Compile Using GCC  
+
+Use GCC to compile the program `oddoreven.c` for the host system:
+
+```bash
+gcc oddoreven.c -o oddoreven
+```
+
+Run the compiled program to verify its functionality:
+
+```bash
+./oddoreven
+```
+
+### Step 2: Compile Using RISC-V GCC  
+
+To compile the program for the RISC-V architecture, use the following command:
+
+```bash
+riscv64-unknown-elf-gcc -O2 -mabi=lp64 -march=rv64i -o oddoreven.o oddoreven.c
+```
+
+#### Explanation of Flags:  
+- `-O2` → Optimizes the code for better performance.  
+- `-mabi=lp64` → Specifies the RISC-V 64-bit LP64 ABI (64-bit pointers and integers).  
+- `-march=rv64i` → Targets the RISC-V 64-bit integer base architecture.  
+- `-o oddoreven.o` → Defines the output file name.  
+
+### Step 3: Run with Spike  
+
+Run the compiled RISC-V binary using the Spike simulator:
+
+```bash
+spike pk oddoreven.o
+```
+
+#### Components Explanation:  
+- `spike` → The RISC-V simulator.  
+- `pk` → The proxy kernel for loading and executing the program.  
+- `oddoreven.o` → The compiled RISC-V executable file.  
+```
+
+
