@@ -542,5 +542,6 @@ Once the simulation generates the `.vcd` (Value Change Dump) file, follow these 
    ```  
 
 
+![Screenshot 2025-02-15 140009](https://github.com/user-attachments/assets/e7478319-a362-4c84-aef4-105d2897e890)
 
 
